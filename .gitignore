@@ -1,5 +1,8 @@
 *.csv
 .h5
+*.jpg
+*.jpeg
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
