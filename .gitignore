@@ -5,6 +5,7 @@
 *.png
 *.pt
 *.zip
+Models.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
