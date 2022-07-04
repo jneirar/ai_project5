@@ -1,6 +1,32 @@
 import torch
 import torch.nn as nn
 
+class Lenet5(nn.Module):
+    def __init__(self):
+        super(Lenet5, self).__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 6, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2)),
+            nn.ReLU(inplace = True),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False),
+            nn.Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1), padding=(0, 0)),
+            nn.ReLU(inplace = True),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False),
+            nn.Conv2d(16, 120, kernel_size=(5, 5), stride=(1, 1), padding=(0, 0)),
+            nn.AdaptiveAvgPool2d(output_size=(1, 1))
+        )
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=120, out_features=84, bias=True),
+            nn.ReLU(inplace = True),
+            nn.Linear(in_features=84, out_features=62, bias=True),
+         )
+        
+    def forward(self, image):
+        out = self.features(image)
+        out = out.view(out.size(0), -1)
+        out = self.classifier(out)
+        return out
+    
+
 class Lenet5_4_fc(nn.Module):
     def __init__(self):
         super(Lenet5_4_fc, self).__init__()
@@ -55,6 +81,37 @@ class Lenet5_1_fc(nn.Module):
         out = self.classifier(out)
         return out
 
+class AlexNet(nn.Module):
+    def __init__(self):
+        super(AlexNet, self).__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 64, kernel_size=(5, 5), stride=(2, 2), padding=(2, 2)),
+            nn.ReLU(inplace = True),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False),
+            nn.Conv2d(64, 192, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2)),
+            nn.ReLU(inplace = True),
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False),
+            nn.Conv2d(192, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
+            nn.ReLU(inplace = True),
+            nn.Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
+            nn.ReLU(inplace = True),
+            nn.Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(0, 0)),
+            nn.AdaptiveAvgPool2d(output_size=(1, 1))
+        )
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=256, out_features=128, bias=True),
+            nn.ReLU(inplace = True),
+            nn.Linear(in_features=128, out_features=128, bias=True),
+            nn.ReLU(inplace = True),
+            nn.Linear(in_features=128, out_features=62, bias=True)
+         )
+
+    def forward(self, image):
+        out = self.features(image)
+        out = out.view(out.size(0), -1)
+        out = self.classifier(out)
+        return out
+    
     
 class AlexNet_5_fc(nn.Module):
     def __init__(self):
@@ -86,7 +143,7 @@ class AlexNet_5_fc(nn.Module):
             nn.ReLU(inplace = True),
             nn.Linear(in_features=1024, out_features=256, bias=True),
             nn.ReLU(inplace = True),
-            nn.Linear(in_features=256, out_features=26, bias=True)
+            nn.Linear(in_features=256, out_features=62, bias=True)
          )
 
     def forward(self, image):
