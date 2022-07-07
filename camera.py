@@ -1,31 +1,42 @@
+import numpy as np
 import cv2
-import time
+from mss import mss
+from PIL import Image
 
-def initiate_camera(seconds, out_name):
-    st = time.time()
-    iteration = 0
+mon = {'left': 160, 'top': 160, 'width': 1000, 'height': 600}
 
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        raise IOError("Cannot open webcam")
-
+with mss() as sct:
     while True:
-        ret, frame = cap.read()
-        # frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5, interpolation=cv2.INTER_AREA)
-        cv2.imshow('Input', frame)
-        cur_time = time.time()
-        elapsed_time = cur_time - st
+        screenShot = sct.grab(mon)
+        img = Image.frombytes(
+            'RGB', 
+            (screenShot.width, screenShot.height), 
+            screenShot.rgb, 
+        )
+        cv2.imshow('test', np.array(img))
 
-        if elapsed_time > iteration * seconds:
-            cv2.imwrite(out_name, frame)
-            iteration += 1
-            #Aquí debería ir el código que manda la imagen (frame) al separador de letras.
-            #frame contiene la imagen como valor, y la imagen capturada como archivo se guarda en out_name
-        c = cv2.waitKey(1)
-        if c == 27:
+        if cv2.waitKey(33) & 0xFF in (
+            ord('q'), 
+            27, 
+        ):
             break
-    cap.release()
-    cv2.destroyAllWindows()
 
-
-#initiate_camera(5, "out.jpg")
+        if cv2.waitKey(33) == ord('s'):
+            cv2.imwrite("out.png", np.array(img))
+            print("Guardado")
+        
+        '''
+        if cv2.waitKey(33) == 100:
+            mon["width"] = mon["width"]+10
+            print("right")
+        elif cv2.waitKey(33) == 119:
+            mon["width"] = mon["width"]-10
+            print("left")
+        elif cv2.waitKey(33) == 115:
+            mon["height"] = mon["height"]-10
+            print("Up")
+        elif cv2.waitKey(33) == 100:
+            mon["height"] = mon["height"]+10
+            print("Down")
+        '''
+        
